@@ -4,6 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+/*
+ * @brief: function to visualize tokens
+ * @param str: string to break into tokens
+ */
 void print_tokens(char *str){
     printf("Parse started\r\n");
     char *tok = strtok(str,":");
@@ -15,16 +20,25 @@ void print_tokens(char *str){
     }
 
 }
+/*
+ * @brief: plug for callbacks, prints it input string
+ * @param keyword: string to print
+ * @retval: always returns RES_OK
+ */
 scpi_res_t debug_callback(char *keyword){
     printf("callback called for %s keyword\r\n",keyword);
     return RES_OK;
 }
 
-scpi_res_t debug_query_callback(char *keyword){
-    printf("callback called for %s keyword, also is query\r\n",keyword);
-    return RES_OK;
-}
-
+/*
+ * @brief: node initializer
+ * @note: inits nodes parameters, pointers to child initialized with NULL, further if needed they
+ * must got value from other function
+ * @param cmd: input pair of command keyword and callback function
+ * @param num: number of this node child nodes, needed to reduce compares
+ * in further funcs
+ * @retval: returns node
+ */
 scpi_cmd_node *init_node(scpi_cmd_t cmd, int num){
     scpi_cmd_node *res = malloc(sizeof(scpi_cmd_node));
     if(res!=NULL){
@@ -36,7 +50,11 @@ scpi_cmd_node *init_node(scpi_cmd_t cmd, int num){
     }
     return res;
 }
-
+/*
+ * @brief: recursive tree processing function
+ * @param root: 'root' node or other node from further iterations
+ * needed to check keywords
+ */
 void process_tree(scpi_cmd_node *root,char *cmd){
     char *tkn;
     if(strchr(cmd,':') != NULL){
@@ -73,11 +91,13 @@ void process_tree(scpi_cmd_node *root,char *cmd){
         return;
     }
 }
-
+/*
+ * @brief: func needed to choose which tree to process by comparing it roots to
+ * cmd start
+ */
 void choose_root(scpi_dev *dev,char *cmd){
     printf("started %s func\r\n",__func__);
     char *tkn;
-    const char *qu = "?";
 
     //const char *res;
     printf("input char: %s\r\n",cmd);
