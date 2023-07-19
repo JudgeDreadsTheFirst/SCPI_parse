@@ -56,13 +56,14 @@ scpi_cmd_node *init_node(scpi_cmd_t cmd, int num){
  * needed to check keywords
  */
 void process_tree(scpi_cmd_node *root,char *cmd){
-    char *tkn;
-    if(strchr(cmd,':') != NULL){
+    char *tkn = NULL;
+    const char *res = NULL;
+    if((res=strchr(cmd,':')) != NULL){
         tkn = strtok(cmd,":");
         printf("Got %s token from %s string.\r\n",tkn,cmd);
         for(int i =0;i < root->num_child;i++){
             if(strcmp(root->childs[i]->cmd.keyword,tkn) == 0){
-                process_tree(root->childs[i],cmd);
+                process_tree(root->childs[i], ++res);
                 break;
             }
         }
@@ -97,8 +98,8 @@ void process_tree(scpi_cmd_node *root,char *cmd){
  */
 void choose_root(scpi_dev *dev,char *cmd){
     printf("started %s func\r\n",__func__);
-    char *tkn;
-
+    char *tkn = NULL;
+    const char *res = NULL;
     //const char *res;
     printf("input char: %s\r\n",cmd);
     printf("*: %s\r\n",strchr(cmd,'*'));
@@ -108,12 +109,12 @@ void choose_root(scpi_dev *dev,char *cmd){
     if(strchr(cmd, '*') != NULL){
         return;
         //basic cmd processing
-    }else if(strchr(cmd,':') != NULL){
+    }else if((res=strchr(cmd,':')) != NULL){
         tkn = strtok(cmd,":");
         for(int i=0;i<dev->num_nodes;i++){
             if(strcmp(dev -> root[i] -> cmd.keyword , tkn) == 0){
                 printf("cmd tree: %s chosen\r\n",dev->root[i]->cmd.keyword);
-                process_tree(dev->root[i],cmd);
+                process_tree(dev->root[i],++res);
                 break;
             }
         }

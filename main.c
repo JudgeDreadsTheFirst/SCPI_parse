@@ -13,7 +13,7 @@ int main(){
     scpi_cmd_node *root1;
     scpi_cmd_node *root2;
     scpi_cmd_node *root3;
-    scpi_cmd_node *child2,*child3;
+    scpi_cmd_node *child2,*child3,*child33;
 
     printf("cmd init!\r\n");
     scpi_cmd_t cmd_lst[] = {
@@ -22,6 +22,7 @@ int main(){
             {.keyword = "FREQ", .callback = debug_callback},
             {.keyword = "LEV", .callback = debug_callback},
             {.keyword = "CONT", .callback = debug_callback},
+            {.keyword = "SET", .callback = debug_callback},
             {NULL,NULL}
     };
     printf("node init!\r\n");
@@ -29,7 +30,8 @@ int main(){
     root2 = init_node(cmd_lst[1],1);
     root3 = init_node(cmd_lst[2],1);
     child2 = init_node(cmd_lst[3],0);
-    child3 = init_node(cmd_lst[4],0);
+    child3 = init_node(cmd_lst[4],1);
+    child33 = init_node(cmd_lst[5],0);
     printf("tree init!\r\n");
     par->root[0] = root1;
     par->root[1] = root2;
@@ -38,6 +40,7 @@ int main(){
     par->root[4] = NULL;
     root2->childs[0] = child2;
     root3->childs[0] = child3;
+    root3->childs[0]->childs[0] = child33;
 
 
     printf("str init!\r\n");
@@ -45,9 +48,9 @@ int main(){
     char str2[] = "FREQ:CONT:SET";
     printf("str: %s\r\n",str);
     printf("TESTING CALLBACKS FOR ROOT\r\n");
-    choose_root(par,str);
+    choose_root(par,str2);
 
-    print_tokens(str2);
+    print_tokens(str);
 
     free(par);
     free(root1);
@@ -55,5 +58,6 @@ int main(){
     free(root3);
     free(child2);
     free(child3);
+    free(child33);
     return 0;
 }
